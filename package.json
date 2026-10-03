@@ -1,0 +1,13 @@
+{
+  "name": "101-okey-arena-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "render-build": "npm --prefix client install && npm --prefix client run build && npm --prefix server install",
+    "start": "npm --prefix server start",
+    "dev": "echo Windows test icin OYUNU BASLAT.bat kullan"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,47 @@
+101 OKEY ARENA — WEB YAYIN PAKETI
+
+Bu paket internete yayin icin hazirdir.
+Frontend ve Socket.IO sunucusu AYNI internet adresinden calisir.
+
+EN KOLAY YOL — RENDER + GITHUB
+
+1) GitHub'da ucretsiz hesap ac:
+   https://github.com/
+
+2) Yeni bir repository olustur.
+   Ornek ad: 101-okey-arena
+
+3) Bu ZIP'in ICINDEKI dosyalari repository'ye yukle.
+   Dikkat: ZIP'in kendisini degil, package.json, render.yaml,
+   client klasoru, server klasoru vb. dosyalari yukle.
+
+4) Render'da hesap ac:
+   https://render.com/
+
+5) Dashboard > New > Blueprint sec.
+   GitHub hesabini bagla ve 101-okey-arena repository'sini sec.
+
+6) Render, render.yaml dosyasini otomatik okuyacak:
+   - Node.js sunucusunu kurar
+   - React/Vite arayuzunu build eder
+   - Socket.IO oyun sunucusunu acar
+   - /health adresinden saglik kontrolu yapar
+
+7) Deploy bitince sana buna benzer bir adres verir:
+   https://101-okey-arena.onrender.com
+
+8) O linki arkadaslarina gonder.
+   Telefon veya bilgisayardan tarayiciyla girip ayni odalara katilabilirler.
+
+ONEMLI
+- Ucretsiz Render Web Service 15 dakika trafik olmazsa uyuyabilir.
+  Ilk acilis bu nedenle yavas olabilir.
+- Su an odalar ve skorlar RAM'de tutuluyor. Sunucu yeniden baslarsa
+  aktif odalar sifirlanir. Gercek kullanici hesabi / kalici profil /
+  arkadas sistemi icin daha sonra veritabani eklenmeli.
+- Galeriden secilen profil fotografi su an oyuncunun kendi cihazinda
+  localStorage'da saklanir ve odaya data olarak gonderilir.
+- Oyun yayina cikmadan once 4 farkli cihazla oyun kurallari test edilmelidir.
+
+YEREL TEST
+ZIP'i cikart ve OYUNU BASLAT.bat dosyasina cift tikla.
