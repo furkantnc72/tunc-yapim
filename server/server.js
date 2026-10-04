@@ -6,10 +6,54 @@ const nx=n=>n==13?1:n+1;function joker(t,g){return t&&t.c==g.c&&t.n==nx(g.n)}fun
 function sameTile(a,b){return !!a&&!!b&&a.c===b.c&&a.n===b.n}
 function setok(ts,g){if(ts.length<3)return false;let j=ts.filter(t=>joker(t,g)).length,x=ts.filter(t=>!joker(t,g)).map(t=>nt(t,g));if(!x.length)return true;if(x.every(t=>t.n==x[0].n)&&new Set(x.map(t=>t.c)).size==x.length&&x.length+j<=4)return true;if(!x.every(t=>t.c==x[0].c))return false;let ns=x.map(t=>t.n).sort((a,b)=>a-b);if(new Set(ns).size!=ns.length)return false;let gap=0;for(let i=1;i<ns.length;i++)gap+=ns[i]-ns[i-1]-1;return gap<=j}
 function isUseful(t,r){if(joker(t,r.g.ind))return true;return(r.g.melds||[]).some(m=>m.type!=="çift"&&setok([...(m.ts||[]),t],r.g.ind))}
-function pub(r){return{started:r.started,current:r.g?.cur??null,opening:r.g?.open??101,indicator:r.g?.ind,okey:r.g?{c:r.g.ind.c,n:nx(r.g.ind.n)}:null,discard:r.g?.disc||[],melds:r.g?.melds||[],players:r.ps.map(p=>({id:p.token,name:p.name,avatar:p.avatar||"🦁",photo:p.photo||"",score:p.score,opened:p.opened,connected:p.connected!==false}))}}
+function pub(r){return{started:r.started,current:r.g?.cur??null,opening:r.g?.open??101,indicator:r.g?.ind,okey:r.g?{c:r.g.ind.c,n:nx(r.g.ind.n)}:null,discard:r.g?.disc||[],melds:r.g?.melds||[],players:r.ps.map(p=>({id:p.token,name:p.name,avatar:p.avatar||"🦁",photo:p.photo||"",score:p.score,opened:p.opened,connected:p.connected!==false,bot:!!p.bot}))}}
 function send(r){io.to(r.code).emit("state",pub(r))}function sendHand(p){if(p?.connected&&p.id)io.to(p.id).emit("hand",p.hand||[])}
 function lobby(){return[...R.values()].filter(r=>!r.started&&r.ps.length<4).map(r=>({code:r.code,count:r.ps.filter(p=>p.connected!==false).length,mode:r.settings?.mode||"katlamasiz",help:r.settings?.help!==false,hands:+(r.settings?.hands||5)}))}
 function broadcastLobby(){io.emit("lobby",lobby())}function bySocket(r,s){return r?.ps.find(p=>p.id===s.id)}
+
+function botGroups(r,p){
+ let hand=p.hand||[],g=r.g.ind,out=[],used=new Set();
+ for(let n=13;n>=1;n--){let by={};for(let t of hand){if(joker(t,g)||used.has(t.id))continue;let x=nt(t,g);if(x.n===n&&!by[x.c])by[x.c]=t}let a=Object.values(by);if(a.length>=3){let q=a.slice(0,4);q.forEach(t=>used.add(t.id));out.push(q)}}
+ for(let color of cs){let by={};for(let t of hand){if(joker(t,g)||used.has(t.id))continue;let x=nt(t,g);if(x.c===color&&!by[x.n])by[x.n]=t}let nums=Object.keys(by).map(Number).sort((a,b)=>a-b),run=[];
+   const flush=()=>{if(run.length>=3){let q=run.map(n=>by[n]);q.forEach(t=>used.add(t.id));out.push(q)}run=[]};
+   for(let n of nums){if(!run.length||n===run[run.length-1]+1)run.push(n);else{flush();run=[n]}}flush()
+ }
+ return out
+}
+function botPairIds(r,p){
+ let groups={};for(let t of p.hand){if(joker(t,r.g.ind))continue;let x=nt(t,r.g.ind),k=x.c+"-"+x.n;(groups[k]??=[]).push(t)}
+ let ids=[];for(let a of Object.values(groups))while(a.length>=2){ids.push(a.shift().id,a.shift().id)}return ids
+}
+function botTryOpen(r,p){
+ if(p.opened)return;
+ let pairIds=botPairIds(r,p);
+ if(pairIds.length>=10){let chosen=new Set(pairIds.slice(0,10)),ts=p.hand.filter(t=>chosen.has(t.id));p.hand=p.hand.filter(t=>!chosen.has(t.id));p.opened=true;r.g.melds.push({name:p.name,ts,type:"çift"});io.to(r.code).emit("notice",p.name+" çift açtı.");return}
+ let gs=botGroups(r,p),flat=gs.flat(),total=flat.reduce((z,t)=>z+(joker(t,r.g.ind)?0:nt(t,r.g.ind).n),0),need=r.settings?.mode==="katlamali"?r.g.open:101;
+ if(gs.length&&total>=need){let ids=new Set(flat.map(t=>t.id));p.hand=p.hand.filter(t=>!ids.has(t.id));p.opened=true;gs.forEach(q=>r.g.melds.push({name:p.name,ts:q}));if(r.settings?.mode==="katlamali")r.g.open=total+1;io.to(r.code).emit("notice",p.name+" "+total+" ile açtı.")}
+}
+function endWithDiscard(r,p,i,t){
+ let finishing=p.hand.length===0;
+ if(!finishing&&isUseful(t,r)){p.score+=100;io.to(r.code).emit("notice",p.name+" işlek/Okey attığı için +100 ceza aldı.")}
+ r.g.disc.push(t);r.g.lastDiscardBy=p.token;
+ if(finishing){let none=r.ps.filter(q=>q!==p).every(q=>!q.opened),ok=joker(t,r.g.ind);r.ps.forEach(q=>q.score+=q===p?(none?(ok?-400:-200):0):(none?(ok?800:400):200));r.started=false;io.to(r.code).emit("notice",p.name+" eli bitirdi.");send(r);return false}
+ r.g.cur=(i+1)%4;send(r);scheduleBot(r);return true
+}
+function botTurn(r){
+ if(!r?.started)return;let i=r.g.cur,p=r.ps[i];if(!p?.bot)return;
+ if(p.hand.length<=21&&r.g.d.length)p.hand.push(r.g.d.pop());
+ botTryOpen(r,p);
+ if(!p.hand.length){r.started=false;send(r);return}
+ let pool=p.hand.filter(t=>!joker(t,r.g.ind)),safe=pool.filter(t=>!isUseful(t,r)),arr=safe.length?safe:(pool.length?pool:p.hand);
+ arr.sort((a,b)=>(nt(a,r.g.ind).n||0)-(nt(b,r.g.ind).n||0));let t=arr[0],x=p.hand.findIndex(q=>q.id===t.id);p.hand.splice(x,1);
+ endWithDiscard(r,p,i,t)
+}
+function scheduleBot(r){if(!r?.started)return;let p=r.ps[r.g.cur];if(!p?.bot)return;clearTimeout(r.botTimer);r.botTimer=setTimeout(()=>botTurn(r),900)}
+function beginGame(r){
+ let d=deck(),ind=d.pop();while(ind.c==="Sahte"){d.unshift(ind);ind=d.pop()}r.g={d,ind,cur:0,open:101,disc:[],melds:[],lastDiscardBy:null};
+ r.ps.forEach((p,i)=>{p.hand=[];p.opened=false;p.side=null;p.sideFrom=null;for(let k=0;k<(i?21:22);k++)p.hand.push(d.pop());sendHand(p)});
+ r.started=true;send(r);broadcastLobby();scheduleBot(r)
+}
+
 io.on("connection",s=>{s.emit("lobby",lobby());
  s.on("join",({code,name,avatar,photo,settings,create,token})=>{token=String(token||"").slice(0,80);if(!token)return s.emit("err","Oyuncu kimliği yok.");let r=R.get(code);
   if(!r){if(!create)return s.emit("err","Oda bulunamadı.");r={code,ownerToken:token,settings:{mode:"katlamasiz",help:true,hands:5,...settings},ps:[],started:false};R.set(code,r)}
@@ -19,18 +63,14 @@ io.on("connection",s=>{s.emit("lobby",lobby());
  });
  s.on("profileUpdate",p=>{let r=R.get(s.data.c),u=bySocket(r,s);if(!u||!p)return;u.name=(p.name||u.name).slice(0,18);u.avatar=p.avatar||"🦁";u.photo=(p.photo||"").slice(0,180000);send(r)});
  s.on("reorder",ids=>{let r=R.get(s.data.c),p=bySocket(r,s);if(!p||!Array.isArray(ids))return;let m=new Map(p.hand.map(t=>[t.id,t])),nh=ids.map(id=>m.get(id)).filter(Boolean);for(let t of p.hand)if(!ids.includes(t.id))nh.push(t);p.hand=nh;sendHand(p)});
- s.on("start",()=>{let r=R.get(s.data.c),p=bySocket(r,s);if(!r||!p||r.ownerToken!==p.token||r.ps.length!==4||r.ps.some(x=>x.connected===false))return s.emit("err","4 oyuncunun da bağlı olması gerekli.");let d=deck(),ind=d.pop();while(ind.c=="Sahte"){d.unshift(ind);ind=d.pop()}r.g={d,ind,cur:0,open:101,disc:[],melds:[],lastDiscardBy:null};r.ps.forEach((p,i)=>{p.hand=[];p.opened=false;p.side=null;p.sideFrom=null;for(let k=0;k<(i?21:22);k++)p.hand.push(d.pop());sendHand(p)});r.started=true;send(r);broadcastLobby()});
+ s.on("start",()=>{let r=R.get(s.data.c),p=bySocket(r,s);if(!r||!p||r.ownerToken!==p.token||r.ps.length!==4||r.ps.some(x=>!x.bot&&x.connected===false))return s.emit("err","4 oyuncunun da bağlı olması gerekli.");beginGame(r)});
+ s.on("playBots",()=>{let r=R.get(s.data.c),p=bySocket(r,s);if(!r||!p||r.ownerToken!==p.token||r.started)return;let n=1;while(r.ps.length<4){while(r.ps.some(x=>x.name==="Bot "+n))n++;r.ps.push({id:null,token:"bot-"+r.code+"-"+n,name:"Bot "+n,avatar:"🤖",photo:"",score:0,hand:[],opened:false,connected:true,bot:true});n++}io.to(r.code).emit("notice","Boş koltuklar botlarla dolduruldu. Oyun başlıyor.");send(r);broadcastLobby();beginGame(r)});
  s.on("draw",()=>{let r=R.get(s.data.c),i=r?.ps.findIndex(p=>p.id===s.id);if(!r?.started||i!==r.g.cur)return;let p=r.ps[i];if(p.side)return s.emit("err","Önce yandan aldığın taşı geri koy veya onunla aç.");if(p.hand.length<=21&&r.g.d.length)p.hand.push(r.g.d.pop());sendHand(p);send(r)});
  s.on("take",()=>{let r=R.get(s.data.c),i=r?.ps.findIndex(p=>p.id===s.id);if(!r?.started||i!==r.g.cur||!r.g.disc.length)return;let p=r.ps[i];if(p.side)return;let t=r.g.disc.pop();p.hand.push(t);p.side=t;p.sideFrom=r.g.lastDiscardBy;p.sideWasIndicator=sameTile(t,r.g.ind);sendHand(p);send(r)});
  s.on("returnSide",()=>{let r=R.get(s.data.c),p=bySocket(r,s);if(!r?.started||!p||!p.side)return s.emit("err","Geri konacak yandan taş yok.");if(!p.sideWasIndicator)return s.emit("err","Sadece yandan aldığın göstergeyi açamıyorsan geri koyabilirsin.");let i=p.hand.findIndex(t=>t.id===p.side.id);if(i>=0)p.hand.splice(i,1);r.g.disc.push(p.side);p.side=null;p.sideFrom=null;p.sideWasIndicator=false;sendHand(p);send(r);s.emit("notice","Gösterge yana geri kondu. Ceza yazılmadı.")});
  s.on("openGroups",groups=>{let r=R.get(s.data.c),p=bySocket(r,s);if(!r?.started||!p||p.opened||!Array.isArray(groups))return;let flat=groups.flat(),uniq=[...new Set(flat)];if(flat.length!==uniq.length)return s.emit("err","Aynı taş iki grupta kullanılamaz.");let real=groups.map(g=>g.map(id=>p.hand.find(t=>t.id===id)).filter(Boolean)).filter(g=>g.length);if(!real.length||real.some(g=>!setok(g,r.g.ind)))return s.emit("err","Perlerden biri geçersiz.");let ids=new Set(uniq),ts=p.hand.filter(t=>ids.has(t.id));if(ts.length!==uniq.length)return s.emit("err","Taş seçimi geçersiz.");let total=ts.reduce((z,t)=>z+(joker(t,r.g.ind)?0:nt(t,r.g.ind).n),0),need=r.settings?.mode=="katlamali"?r.g.open:101;if(total<need)return s.emit("err","Per toplamı "+total+". Açmak için "+need+" gerekli.");if(p.side&&!ids.has(p.side.id))return s.emit("err","Yandan aldığın taşı açılışında kullanmak zorundasın.");p.hand=p.hand.filter(t=>!ids.has(t.id));p.opened=true;real.forEach(g=>r.g.melds.push({name:p.name,ts:g}));if(r.settings?.mode=="katlamali")r.g.open=total+1;if(p.side){let q=r.ps.find(x=>x.token===p.sideFrom);if(q)q.score+=p.side.n*10;p.side=null;p.sideFrom=null;p.sideWasIndicator=false}sendHand(p);send(r)});
  s.on("pairs",ids=>{let r=R.get(s.data.c),p=bySocket(r,s);if(!r?.started||!p||p.opened)return;let chosen=p.hand.filter(t=>ids.includes(t.id)),used=new Set(),pairIds=[],jokers=chosen.filter(t=>joker(t,r.g.ind));for(let i=0;i<chosen.length;i++)for(let j=i+1;j<chosen.length;j++){let x=chosen[i],y=chosen[j];if(used.has(x.id)||used.has(y.id)||joker(x,r.g.ind)||joker(y,r.g.ind))continue;let a=nt(x,r.g.ind),b=nt(y,r.g.ind);if(a.c===b.c&&a.n===b.n){used.add(x.id);used.add(y.id);pairIds.push(x.id,y.id)}}let pairCount=pairIds.length/2;while(pairCount<5&&jokers.length){let single=chosen.find(t=>!used.has(t.id)&&!joker(t,r.g.ind));if(!single)break;let j=jokers.shift();used.add(single.id);used.add(j.id);pairIds.push(single.id,j.id);pairCount++}if(pairCount<5)return s.emit("err","Çift açmak için en az 5 geçerli çift gerekli.");let openIds=new Set(pairIds);if(p.side&&!openIds.has(p.side.id))return s.emit("err","Yandan aldığın taşı çift açılışında kullanmalısın.");let ts=p.hand.filter(t=>openIds.has(t.id));p.hand=p.hand.filter(t=>!openIds.has(t.id));p.opened=true;r.g.melds.push({name:p.name,ts,type:"çift"});if(p.side){let q=r.ps.find(x=>x.token===p.sideFrom);if(q){if(p.sideWasIndicator)q.score+=100;else q.score+=p.side.n*20}p.side=null;p.sideFrom=null;p.sideWasIndicator=false}sendHand(p);send(r)});
- s.on("discard",id=>{let r=R.get(s.data.c),i=r?.ps.findIndex(p=>p.id===s.id);if(!r?.started||i!==r.g.cur)return;let p=r.ps[i];if(p.side)return s.emit("err","Yandan taş aldın. Önce aç veya göstergeyse geri koy.");let x=p.hand.findIndex(t=>t.id===id);if(x<0)return;let t=p.hand.splice(x,1)[0],finishing=p.hand.length===0;
-  if(!finishing&&isUseful(t,r)){p.score+=100;io.to(r.code).emit("notice",p.name+" işlek/Okey attığı için +100 ceza aldı.")}
-  r.g.disc.push(t);r.g.lastDiscardBy=p.token;
-  if(finishing){let none=r.ps.filter(q=>q!==p).every(q=>!q.opened),ok=joker(t,r.g.ind);r.ps.forEach(q=>q.score+=q===p?(none?(ok?-400:-200):0):(none?(ok?800:400):200));r.started=false;io.to(r.code).emit("notice",p.name+" eli bitirdi.");send(r);return}
-  r.g.cur=(i+1)%4;sendHand(p);send(r)
- });
+ s.on("discard",id=>{let r=R.get(s.data.c),i=r?.ps.findIndex(p=>p.id===s.id);if(!r?.started||i!==r.g.cur)return;let p=r.ps[i];if(p.side)return s.emit("err","Yandan taş aldın. Önce aç veya göstergeyse geri koy.");let x=p.hand.findIndex(t=>t.id===id);if(x<0)return;let t=p.hand.splice(x,1)[0];sendHand(p);endWithDiscard(r,p,i,t)});
  s.on("disconnect",()=>{let r=R.get(s.data.c),p=r?.ps.find(x=>x.token===s.data.token);if(!r||!p)return;p.connected=false;p.id=null;io.to(r.code).emit("notice",p.name+" oyundan çıktı. Geri dönebilir.");send(r);broadcastLobby()})
 });
 a.get("*",(req,res)=>{if(req.path.startsWith("/socket.io"))return;res.sendFile(path.join(webDir,"index.html"))});const PORT=process.env.PORT||3001;sv.listen(PORT,"0.0.0.0",()=>console.log("101 Okey Arena hazır:",PORT));
