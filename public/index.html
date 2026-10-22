@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Cesur AI • TikTok LIVE</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main id="app" class="app">
+    <section class="stage" id="stage">
+      <div class="hallway" aria-hidden="true">
+        <div class="ceiling"><i></i><i></i><i></i></div>
+        <div class="wall wall-left"><div class="locker l1"></div><div class="locker l2"></div></div>
+        <div class="wall wall-right"><div class="locker r1"></div><div class="locker r2"></div></div>
+        <div class="back-door"><span>102</span></div>
+        <div class="floor-lines"></div>
+      </div>
+
+      <header class="topbar">
+        <div class="live-pill"><b>● CANLI</b><span id="connectionLabel">TEST MODU</span></div>
+        <div class="progress-wrap">
+          <div class="progress-title"><span>❤️</span><strong id="likeProgressText">0 / 54.000</strong></div>
+          <div class="progress"><div id="likeProgress"></div></div>
+        </div>
+        <div class="viewers">👁 <strong id="viewerCount">0</strong></div>
+      </header>
+
+      <div class="headline" id="headline">SORUNU YAZ, CESUR OKUSUN</div>
+
+      <aside class="actions left-actions" id="leftActions">
+        <button data-test-action="fall"><span>🍦</span><b>DÜŞER</b></button>
+        <button data-test-action="hit"><span>🥊</span><b>YUMRUK<br>ATAR</b></button>
+        <button data-test-action="dance"><span>💃</span><b>DANS EDER</b></button>
+        <button data-test-action="scare"><span>👻</span><b>KORKAR</b></button>
+      </aside>
+
+      <aside class="actions right-actions" id="rightActions">
+        <button data-test-action="walk-left"><span>🚪</span><b>MUTFAĞA<br>GİDER</b></button>
+        <button data-test-action="jump"><span>🪑</span><b>KOLTUĞA<br>ÇIKAR</b></button>
+        <button data-test-action="walk-right"><span>🌳</span><b>BAHÇEYE<br>ÇIKAR</b></button>
+        <button data-test-action="spin"><span>🌀</span><b>ÇILDIRIR</b></button>
+      </aside>
+
+      <div class="character-zone" id="characterZone">
+        <div class="shadow"></div>
+        <img id="courage" class="courage idle" src="/assets/cesur.webp?v=3" alt="Cesur Korkak Köpek" />
+        <div class="speech hidden" id="speech"></div>
+        <div class="impact hidden" id="impact">POW!</div>
+        <div class="ghost hidden" id="ghost">👻</div>
+      </div>
+
+      <div class="caption hidden" id="caption"></div>
+      <div class="gift-alert hidden" id="giftAlert"></div>
+
+      <div class="chat" id="chat"></div>
+      <div class="event-toast" id="eventToast"></div>
+
+      <button class="settings-toggle" id="settingsToggle" aria-label="Ayarlar">⚙️</button>
+
+      <section class="settings" id="settings">
+        <div class="settings-head"><strong>Cesur LIVE Kontrol</strong><button id="closeSettings">×</button></div>
+        <label>TikTok kullanıcı adı</label>
+        <div class="row"><input id="username" placeholder="@kullaniciadi" autocomplete="off"/><button id="connectBtn">Bağlan</button></div>
+        <div class="status" id="statusText">Test modu açık. Aşağıdaki butonlarla dene.</div>
+
+        <div class="toggle-row"><span>AI yorum cevapları</span><input id="aiToggle" type="checkbox" checked /></div>
+        <div class="toggle-row"><span>Sesli konuşma</span><input id="ttsToggle" type="checkbox" checked /></div>
+        <div class="toggle-row"><span>Otomatik yorum seç</span><input id="autoReplyToggle" type="checkbox" checked /></div>
+
+        <hr />
+        <label>Test yorumu</label>
+        <div class="row"><input id="testComment" value="Cesur arkanda biri var!"/><button id="sendComment">Gönder</button></div>
+        <div class="test-grid">
+          <button data-test="rose">🌹 Gül</button>
+          <button data-test="donut">🍩 Orta hediye</button>
+          <button data-test="galaxy">🌌 Büyük hediye</button>
+          <button data-test="follow">➕ Takip</button>
+          <button data-test="likes">❤️ +1000 Like</button>
+          <button data-test="share">↗️ Paylaşım</button>
+        </div>
+        <p class="tiny">OBS/TikTok LIVE Studio için bu sayfayı tarayıcı kaynağı olarak aç. Yayın görünümünde ⚙️ panelini kapat.</p>
+      </section>
+    </section>
+  </main>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

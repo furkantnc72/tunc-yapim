@@ -1,13 +1,15 @@
 {
-  "name": "101-okey-arena-web",
+  "name": "cesur-tiktok-ai-live",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "render-build": "npm --prefix client install && npm --prefix client run build && npm --prefix server install",
-    "start": "npm --prefix server start",
-    "dev": "echo Windows test icin OYUNU BASLAT.bat kullan"
+    "start": "node server.js",
+    "dev": "node --watch server.js"
   },
-  "engines": {
-    "node": ">=20"
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1",
+    "tiktok-live-connector": "^2.0.0"
   }
 }

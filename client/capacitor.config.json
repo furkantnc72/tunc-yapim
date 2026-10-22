@@ -1,8 +1,0 @@
-{
-  "appId": "com.okeyarena.game",
-  "appName": "101 Okey Arena",
-  "webDir": "dist",
-  "android": {
-    "allowMixedContent": true
-  }
-}
