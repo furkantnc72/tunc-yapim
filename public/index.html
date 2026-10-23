@@ -4,7 +4,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Cesur AI • TikTok LIVE</title>
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/style.css?v=9" />
+  <style>
+    .actions,.chat{display:none!important}
+    .headline{left:8%!important;right:8%!important}
+    .character-zone{left:6%!important;right:6%!important;top:20%!important;bottom:14%!important}
+    .character-actor{bottom:0!important;width:100%!important;height:100%!important;max-height:none!important;filter:drop-shadow(0 16px 18px rgba(0,0,0,.35))!important}
+    .courage{width:100%!important;height:100%!important;object-fit:contain!important;display:block!important}
+    .shadow{bottom:2%!important;width:42%!important;height:4%!important;filter:blur(6px)!important}
+    .event-toast{bottom:7%!important;font-size:clamp(10px,1.55vh,16px)!important}
+  </style>
 </head>
 <body>
   <main id="app" class="app">
@@ -30,28 +39,13 @@
       <div class="headline" id="headline">SORUNU YAZ, CESUR OKUSUN</div>
       <div class="action-chip hidden" id="actionChip">ANİMASYON</div>
 
-      <aside class="actions left-actions" id="leftActions">
-        <button data-test-action="fall"><span>🍦</span><b>DÜŞER</b></button>
-        <button data-test-action="hit"><span>🥊</span><b>YUMRUK<br>ATAR</b></button>
-        <button data-test-action="dance"><span>💃</span><b>DANS EDER</b></button>
-        <button data-test-action="scare"><span>👻</span><b>KORKAR</b></button>
-        <button data-test-action="panic-run"><span>🏃</span><b>KOŞAR</b></button>
-        <button data-test-action="laugh"><span>😂</span><b>GÜLER</b></button>
-      </aside>
-
-      <aside class="actions right-actions" id="rightActions">
-        <button data-test-action="walk-left"><span>🚪</span><b>MUTFAĞA<br>GİDER</b></button>
-        <button data-test-action="jump"><span>🪑</span><b>KOLTUĞA<br>ÇIKAR</b></button>
-        <button data-test-action="walk-right"><span>🌳</span><b>BAHÇEYE<br>ÇIKAR</b></button>
-        <button data-test-action="spin"><span>🌀</span><b>ÇILDIRIR</b></button>
-        <button data-test-action="sleep"><span>😴</span><b>UYUR</b></button>
-        <button data-test-action="celebrate"><span>🎉</span><b>KUTLAR</b></button>
-      </aside>
+      <aside class="actions left-actions" id="leftActions"></aside>
+      <aside class="actions right-actions" id="rightActions"></aside>
 
       <div class="character-zone" id="characterZone">
         <div class="shadow"></div>
         <div class="character-actor idle" id="actor">
-          <img id="courage" class="courage" src="/assets/cesur.webp?v=4" alt="Cesur Korkak Köpek" />
+          <img id="courage" class="courage" src="/assets/cesur.webp?v=9" alt="Cesur Korkak Köpek" />
         </div>
         <div class="speech hidden" id="speech"></div>
         <div class="impact hidden" id="impact">POW!</div>
@@ -62,7 +56,6 @@
       <div class="caption hidden" id="caption"></div>
       <div class="gift-alert hidden" id="giftAlert"></div>
       <div class="particle-layer" id="particleLayer"></div>
-
       <div class="chat" id="chat"></div>
       <div class="event-toast" id="eventToast"></div>
 
@@ -90,11 +83,10 @@
           <button data-test="likes">❤️ +1000 Like</button>
           <button data-test="share">↗️ Paylaşım</button>
         </div>
-        <p class="tiny">OBS/TikTok LIVE Studio için bu sayfayı tarayıcı kaynağı olarak aç. Yayın görünümünde ⚙️ panelini kapat.</p>
       </section>
     </section>
   </main>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/app.js"></script>
+  <script src="/app.js?v=9"></script>
 </body>
 </html>
