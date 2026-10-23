@@ -15,6 +15,7 @@
         <div class="wall wall-right"><div class="locker r1"></div><div class="locker r2"></div></div>
         <div class="back-door"><span>102</span></div>
         <div class="floor-lines"></div>
+        <div class="floor-glow"></div>
       </div>
 
       <header class="topbar">
@@ -27,12 +28,15 @@
       </header>
 
       <div class="headline" id="headline">SORUNU YAZ, CESUR OKUSUN</div>
+      <div class="action-chip hidden" id="actionChip">ANİMASYON</div>
 
       <aside class="actions left-actions" id="leftActions">
         <button data-test-action="fall"><span>🍦</span><b>DÜŞER</b></button>
         <button data-test-action="hit"><span>🥊</span><b>YUMRUK<br>ATAR</b></button>
         <button data-test-action="dance"><span>💃</span><b>DANS EDER</b></button>
         <button data-test-action="scare"><span>👻</span><b>KORKAR</b></button>
+        <button data-test-action="panic-run"><span>🏃</span><b>KOŞAR</b></button>
+        <button data-test-action="laugh"><span>😂</span><b>GÜLER</b></button>
       </aside>
 
       <aside class="actions right-actions" id="rightActions">
@@ -40,18 +44,24 @@
         <button data-test-action="jump"><span>🪑</span><b>KOLTUĞA<br>ÇIKAR</b></button>
         <button data-test-action="walk-right"><span>🌳</span><b>BAHÇEYE<br>ÇIKAR</b></button>
         <button data-test-action="spin"><span>🌀</span><b>ÇILDIRIR</b></button>
+        <button data-test-action="sleep"><span>😴</span><b>UYUR</b></button>
+        <button data-test-action="celebrate"><span>🎉</span><b>KUTLAR</b></button>
       </aside>
 
       <div class="character-zone" id="characterZone">
         <div class="shadow"></div>
-        <img id="courage" class="courage idle" src="/assets/cesur.webp?v=3" alt="Cesur Korkak Köpek" />
+        <div class="character-actor idle" id="actor">
+          <img id="courage" class="courage" src="/assets/cesur.webp?v=4" alt="Cesur Korkak Köpek" />
+        </div>
         <div class="speech hidden" id="speech"></div>
         <div class="impact hidden" id="impact">POW!</div>
         <div class="ghost hidden" id="ghost">👻</div>
+        <div class="zzz hidden" id="zzz">Zzz...</div>
       </div>
 
       <div class="caption hidden" id="caption"></div>
       <div class="gift-alert hidden" id="giftAlert"></div>
+      <div class="particle-layer" id="particleLayer"></div>
 
       <div class="chat" id="chat"></div>
       <div class="event-toast" id="eventToast"></div>
@@ -67,6 +77,7 @@
         <div class="toggle-row"><span>AI yorum cevapları</span><input id="aiToggle" type="checkbox" checked /></div>
         <div class="toggle-row"><span>Sesli konuşma</span><input id="ttsToggle" type="checkbox" checked /></div>
         <div class="toggle-row"><span>Otomatik yorum seç</span><input id="autoReplyToggle" type="checkbox" checked /></div>
+        <div class="toggle-row"><span>Boştayken kendi hareket etsin</span><input id="autoMotionToggle" type="checkbox" checked /></div>
 
         <hr />
         <label>Test yorumu</label>
