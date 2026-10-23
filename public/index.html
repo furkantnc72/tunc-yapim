@@ -4,15 +4,56 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Cesur AI • TikTok LIVE</title>
-  <link rel="stylesheet" href="/style.css?v=13" />
+  <link rel="stylesheet" href="/style.css?v=14" />
   <style>
     .actions,.chat{display:none!important}
     .headline{left:8%!important;right:8%!important}
-    .character-zone{left:6%!important;right:6%!important;top:20%!important;bottom:14%!important}
-    .character-actor{bottom:0!important;width:100%!important;height:100%!important;max-height:none!important;filter:drop-shadow(0 16px 18px rgba(0,0,0,.35))!important}
-    .courage{width:100%!important;height:100%!important;object-fit:contain!important;display:block!important}
-    .shadow{bottom:2%!important;width:42%!important;height:4%!important;filter:blur(6px)!important}
+    .character-zone{left:10%!important;right:10%!important;top:24%!important;bottom:13%!important}
+    .character-actor{bottom:7%!important;width:56%!important;height:62%!important;max-height:none!important;filter:drop-shadow(0 12px 14px rgba(0,0,0,.34))!important;transform-origin:50% 92%!important}
+    .courage{width:100%!important;height:100%!important;object-fit:contain!important;display:block!important;transform-origin:50% 90%!important}
+    .shadow{bottom:6%!important;width:24%!important;height:3.2%!important;filter:blur(5px)!important}
     .event-toast{bottom:7%!important;font-size:clamp(10px,1.55vh,16px)!important}
+
+    .character-actor.idle{animation:idleAlive 1.55s ease-in-out infinite!important}
+    .character-actor.talk{animation:talkAlive .22s ease-in-out infinite alternate!important}
+    .character-actor.scare{animation:scareStrong .08s linear 18!important}
+    .character-actor.dance{animation:danceStrong .42s ease-in-out 8!important}
+    .character-actor.fall{animation:fallStrong 1.5s ease-in-out!important}
+    .character-actor.hit{animation:hitStrong 1.05s ease!important}
+    .character-actor.jump{animation:jumpStrong 1.25s cubic-bezier(.2,.8,.25,1)!important}
+    .character-actor.spin{animation:spinStrong 1.3s ease-in-out!important}
+    .character-actor.walk-left{animation:walkLeftStrong 2.2s ease-in-out!important}
+    .character-actor.walk-right{animation:walkRightStrong 2.2s ease-in-out!important}
+    .character-actor.big-gift{animation:bigGiftStrong .72s ease-in-out 5!important}
+    .character-actor.panic-run{animation:panicRunStrong 2.45s linear!important}
+    .character-actor.sleep{animation:sleepStrong 3.2s ease-in-out!important}
+    .character-actor.laugh{animation:laughStrong .25s ease-in-out 8!important}
+    .character-actor.celebrate{animation:celebrateStrong .48s ease-in-out 6!important}
+    .character-actor.wobble{animation:wobbleStrong .22s ease-in-out 6!important}
+
+    .character-actor.walk-left .courage,.character-actor.walk-right .courage,.character-actor.panic-run .courage{animation:stepBounce .22s ease-in-out infinite!important}
+    .character-actor.talk .courage{animation:talkSquash .18s ease-in-out infinite alternate!important}
+    .character-actor.sleep .courage{animation:sleepBreath 1.2s ease-in-out infinite!important}
+
+    @keyframes idleAlive{0%,100%{transform:translateY(0) rotate(-2deg) scale(1)}50%{transform:translateY(-11px) rotate(2deg) scale(1.015,.985)}}
+    @keyframes talkAlive{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-8px) rotate(1deg)}}
+    @keyframes talkSquash{from{transform:scale(1)}to{transform:scale(1.035,.965)}}
+    @keyframes scareStrong{0%{transform:translateX(-10px) rotate(-7deg) scale(1.02)}100%{transform:translateX(10px) rotate(7deg) scale(.98)}}
+    @keyframes danceStrong{0%,100%{transform:translateY(0) rotate(-10deg)}25%{transform:translateY(-25px) rotate(13deg) scale(1.04)}50%{transform:translateY(0) rotate(-13deg)}75%{transform:translateY(-25px) rotate(12deg) scale(1.04)}}
+    @keyframes fallStrong{0%{transform:translate(0,0) rotate(0)}28%{transform:translate(38px,-8px) rotate(28deg)}58%{transform:translate(82px,58px) rotate(91deg)}78%{transform:translate(82px,58px) rotate(96deg)}100%{transform:translate(0,0) rotate(0)}}
+    @keyframes hitStrong{0%,100%{transform:translateX(0) rotate(0)}30%{transform:translateX(-55px) rotate(-16deg)}48%{transform:translateX(85px) rotate(10deg) scale(1.06)}65%{transform:translateX(15px) rotate(-4deg)}}
+    @keyframes jumpStrong{0%,100%{transform:translateY(0) scale(1)}42%{transform:translateY(-150px) scale(.93,1.08)}63%{transform:translateY(-135px) rotate(8deg)}}
+    @keyframes spinStrong{0%{transform:rotate(0) scale(1)}50%{transform:rotate(540deg) scale(.78)}100%{transform:rotate(1080deg) scale(1)}}
+    @keyframes walkLeftStrong{0%,100%{transform:translateX(0)}12%{transform:translateX(-25px) translateY(-9px) rotate(-3deg)}28%{transform:translateX(-75px) translateY(0) rotate(3deg)}44%{transform:translateX(-125px) translateY(-9px) rotate(-3deg)}58%{transform:translateX(-155px) translateY(0) rotate(2deg)}75%{transform:translateX(-90px) translateY(-9px) rotate(-2deg)}}
+    @keyframes walkRightStrong{0%,100%{transform:translateX(0)}12%{transform:translateX(25px) translateY(-9px) rotate(3deg)}28%{transform:translateX(75px) translateY(0) rotate(-3deg)}44%{transform:translateX(125px) translateY(-9px) rotate(3deg)}58%{transform:translateX(155px) translateY(0) rotate(-2deg)}75%{transform:translateX(90px) translateY(-9px) rotate(2deg)}}
+    @keyframes bigGiftStrong{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(1.18) rotate(-8deg)}50%{transform:scale(.88) rotate(8deg)}75%{transform:scale(1.13) rotate(-5deg)}}
+    @keyframes panicRunStrong{0%{transform:translateX(0) translateY(0)}15%{transform:translateX(150px) translateY(-14px) rotate(5deg)}30%{transform:translateX(-145px) translateY(0) rotate(-5deg)}45%{transform:translateX(145px) translateY(-14px) rotate(5deg)}60%{transform:translateX(-150px) translateY(0) rotate(-5deg)}75%{transform:translateX(120px) translateY(-14px) rotate(4deg)}100%{transform:translateX(0) translateY(0)}}
+    @keyframes sleepStrong{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(18px) rotate(-10deg)}45%,78%{transform:translateY(24px) rotate(-16deg)}90%{transform:translateY(5px) rotate(-4deg)}}
+    @keyframes laughStrong{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-15px) rotate(5deg) scale(1.035,.965)}}
+    @keyframes celebrateStrong{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-35px) rotate(-10deg) scale(1.05)}50%{transform:translateY(0) rotate(10deg)}75%{transform:translateY(-35px) rotate(-8deg) scale(1.04)}}
+    @keyframes wobbleStrong{0%,100%{transform:rotate(0)}25%{transform:rotate(-11deg) translateX(-8px)}50%{transform:rotate(11deg) translateX(8px)}75%{transform:rotate(-7deg)}}
+    @keyframes stepBounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.02,.98)}}
+    @keyframes sleepBreath{0%,100%{transform:scale(1)}50%{transform:scale(1.025,.98)}}
   </style>
 </head>
 <body>
@@ -87,7 +128,27 @@
     </section>
   </main>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/dog.js?v=13"></script>
-  <script src="/app.js?v=13"></script>
+  <script src="/dog.js?v=14"></script>
+  <script src="/app.js?v=14"></script>
+  <script>
+    (() => {
+      const actor = document.getElementById('actor');
+      if (!actor) return;
+      const motions = ['walk-left','walk-right','scare','jump','wobble','laugh','dance'];
+      let fallbackBusy = false;
+      const autoMove = () => {
+        if (fallbackBusy || !actor.classList.contains('idle')) return;
+        fallbackBusy = true;
+        const motion = motions[Math.floor(Math.random() * motions.length)];
+        actor.className = `character-actor ${motion}`;
+        setTimeout(() => {
+          actor.className = 'character-actor idle';
+          fallbackBusy = false;
+        }, motion === 'dance' ? 3200 : motion.startsWith('walk') ? 2200 : 1500);
+      };
+      setTimeout(autoMove, 2200);
+      setInterval(autoMove, 4800);
+    })();
+  </script>
 </body>
 </html>
